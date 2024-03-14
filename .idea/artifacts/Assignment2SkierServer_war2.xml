@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Assignment2SkierServer:war2">
+    <output-path>$PROJECT_DIR$/out/artifacts/Assignment2SkierServer_war2</output-path>
+    <root id="archive" name="Assignment2SkierServer_war.war">
+      <element id="artifact" artifact-name="Assignment2SkierServer:war exploded" />
+    </root>
+  </artifact>
+</component>

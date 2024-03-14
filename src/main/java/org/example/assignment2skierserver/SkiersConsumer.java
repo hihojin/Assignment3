@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 public class SkiersConsumer {
     private final ConcurrentHashMap<String, String> liftRidesMap;
-    private static final int THREADS = 5;
+    private static final int THREADS = 10;
 
 
     public SkiersConsumer() {
@@ -20,7 +20,7 @@ public class SkiersConsumer {
     public void receive() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("35.167.23.169"); // change on restarting ec2
+            factory.setHost("35.91.222.214"); // change on restarting ec2
             factory.setUsername("admin");
             factory.setPassword("password");
             factory.setVirtualHost("/");
@@ -36,7 +36,7 @@ public class SkiersConsumer {
 
                 channel.queueDeclare(queueName, false, false, false, null);
                 System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-                channel.basicQos(1);
+                channel.basicQos(50);
 
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                     String message = new String(delivery.getBody(), "UTF-8");
@@ -54,18 +54,17 @@ public class SkiersConsumer {
 
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.out.println("executor service error");
                     }
                 });
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("connection error to rabbitmq");
         }
     }
 
     private void processMessage(String message) {
-        // parse json here
          JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
 
          String skierID = jsonObject.get("skierID").getAsString();
@@ -80,11 +79,7 @@ public class SkiersConsumer {
                     .append("}");
 
         String data = dataBuilder.toString();
-        // replace or put condition if else add here
         this.liftRidesMap.put(skierID, data);
-
-        // Print the updated map for demonstration purposes
-        System.out.println("Updated lift rides map: " + this.liftRidesMap);
     }
 
     public static void main(String[] args) {

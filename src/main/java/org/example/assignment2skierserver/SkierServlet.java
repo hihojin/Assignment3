@@ -18,13 +18,13 @@ public class SkierServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         try {
-            int QUEUE_SIZE = 1;
-            String HOST = "35.167.23.169";  // change this ec2 start
+            int CHANNELS = 100; // channel size
+            String HOST = "35.91.222.214";  // change this ec2 start
             String USERNAME = "admin";
             String PASSWORD = "password";
             String VIRTUALHOST = "/";
             int PORT = 5672;
-            pool = new RMQChannelPool(QUEUE_SIZE, HOST, PORT, USERNAME, PASSWORD, VIRTUALHOST);
+            pool = new RMQChannelPool(CHANNELS, HOST, PORT, USERNAME, PASSWORD, VIRTUALHOST);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
@@ -59,8 +59,8 @@ public class SkierServlet extends HttpServlet {
         //}
     }
 
-    // Helper method to check if a string can be parsed to an integer
     private static boolean isParsable(String input) {
+        // Helper method to check if a string can be parsed to an integer
         try {
             // Attempt to parse the string
             Integer.parseInt(input);
@@ -83,7 +83,7 @@ public class SkierServlet extends HttpServlet {
         }
 
         String[] urlParts = urlPath.split("/");
-        //System.out.println(Arrays.toString(urlParts));
+
         final int urllLength = 8;
         if (urlParts.length != urllLength) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -164,9 +164,7 @@ public class SkierServlet extends HttpServlet {
 
         JsonObject jsonObject = JsonParser.parseString(data)
                 .getAsJsonObject();
-//        Gson gson = new Gson();
-//        String myJson = gson.toJson(data);
-//        System.out.println(myJson.getClass());
+
         int time;
         int liftID;
         try {
