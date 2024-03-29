@@ -1,5 +1,6 @@
 package org.example.assignment2skierserver;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.rabbitmq.client.*;
@@ -10,7 +11,7 @@ import java.util.concurrent.Executors;
 
 public class SkiersConsumer {
     private final ConcurrentHashMap<String, String> liftRidesMap;
-    private static final int THREADS = 10;
+    private static final int THREADS = 100;
 
 
     public SkiersConsumer() {
@@ -20,7 +21,7 @@ public class SkiersConsumer {
     public void receive() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("35.91.222.214"); // change on restarting ec2
+            factory.setHost("35.85.57.234"); // change on restarting ec2
             factory.setUsername("admin");
             factory.setPassword("password");
             factory.setVirtualHost("/");
@@ -67,19 +68,28 @@ public class SkiersConsumer {
     private void processMessage(String message) {
          JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
 
-         String skierID = jsonObject.get("skierID").getAsString();
+         int skierID = jsonObject.get("skierID").getAsInt();
 
-         StringBuilder dataBuilder = new StringBuilder();
-         dataBuilder.append("{")
-                    .append("\"resortID\":").append(jsonObject.get("resortID")).append(",")
-                    .append("\"seasonID\":").append(jsonObject.get("seasonID")).append(",")
-                    .append("\"dayID\":").append(jsonObject.get("dayID")).append(",")
-                    .append("\"time\":").append(jsonObject.get("time")).append(",")
-                    .append("\"liftID\":").append(jsonObject.get("liftID"))
-                    .append("}");
+//         StringBuilder dataBuilder = new StringBuilder();
+//         dataBuilder.append("{")
+//                    .append("\"resortID\":").append(jsonObject.get("resortID")).append(",")
+//                    .append("\"seasonID\":").append(jsonObject.get("seasonID")).append(",")
+//                    .append("\"dayID\":").append(jsonObject.get("dayID")).append(",")
+//                    .append("\"time\":").append(jsonObject.get("time")).append(",")
+//                    .append("\"liftID\":").append(jsonObject.get("liftID"))
+//                    .append("}");
+//
+//        String data = dataBuilder.toString();
+        // in-memory store
+        // this.liftRidesMap.put(skierID, data);
+        int resortID = jsonObject.get("resortID").getAsInt();
+        int seasonID = jsonObject.get("seasonID").getAsInt();
+        int dayID = jsonObject.get("dayID").getAsInt();
+        int time = jsonObject.get("time").getAsInt();
+        int liftID = jsonObject.get("liftID").getAsInt();
+        // calling to store data in dynamodb
+        new DynamoDBConnection(skierID, resortID, seasonID, dayID, time, liftID);
 
-        String data = dataBuilder.toString();
-        this.liftRidesMap.put(skierID, data);
     }
 
     public static void main(String[] args) {

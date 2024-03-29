@@ -19,7 +19,7 @@ public class SkierServlet extends HttpServlet {
         super.init(config);
         try {
             int CHANNELS = 100; // channel size
-            String HOST = "35.91.222.214";  // change this ec2 start
+            String HOST = "35.85.57.234";  // change this ec2 start
             String USERNAME = "admin";
             String PASSWORD = "password";
             String VIRTUALHOST = "/";
